@@ -1,0 +1,88 @@
+services:
+{% set embedded = embedded_nginx | default(false) %}
+  app:
+{% if embedded %}
+    build: ./repo
+    ports:
+      - "80:80"
+{% else %}
+    build: ./repo/{{ analysis.stack.backend_path or analysis.stack.frontend_path or "." }}
+    ports:
+      - "{{ app_port | default(3000) }}:{{ app_port | default(3000) }}"
+{% endif %}
+    environment:
+{% if not embedded and app_port is defined %}
+      PORT: "{{ app_port }}"
+{% endif %}
+      NODE_ENV: "production"
+{% if include_db %}
+      DATABASE_URL: {{ database_url | default("postgresql://computeedge:changeme@db:5432/app") }}
+{% endif %}
+{% if include_redis %}
+      REDIS_URL: {{ redis_url | default("redis://redis:6379/0") }}
+{% endif %}
+{% if env_vars is defined %}
+{% for key, value in env_vars.items() %}
+{% if key not in ["DATABASE_URL", "REDIS_URL", "PORT", "NODE_ENV"] %}
+      {{ key }}: "{{ value }}"
+{% endif %}
+{% endfor %}
+{% endif %}
+{% if include_db %}
+    depends_on:
+      - db
+{% endif %}
+
+{% if include_db and db_type == "postgres" %}
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: {{ db_user | default("computeedge") }}
+      POSTGRES_PASSWORD: {{ db_password | default("changeme") }}
+      POSTGRES_DB: {{ db_name | default("app") }}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+{% elif include_db and db_type == "mysql" %}
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: {{ db_password | default("changeme") }}
+      MYSQL_DATABASE: {{ db_name | default("app") }}
+      MYSQL_USER: {{ db_user | default("computeedge") }}
+      MYSQL_PASSWORD: {{ db_password | default("changeme") }}
+    volumes:
+      - mysqldata:/var/lib/mysql
+{% elif include_db and db_type == "mongodb" %}
+  db:
+    image: mongo:7
+    volumes:
+      - mongodata:/data/db
+{% endif %}
+
+{% if include_redis %}
+  redis:
+    image: redis:7-alpine
+{% endif %}
+
+{% if not embedded %}
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - app
+{% endif %}
+
+{% if include_db %}
+volumes:
+{% if db_type == "postgres" %}
+  pgdata:
+{% elif db_type == "mysql" %}
+  mysqldata:
+{% elif db_type == "mongodb" %}
+  mongodata:
+{% endif %}
+{% endif %}

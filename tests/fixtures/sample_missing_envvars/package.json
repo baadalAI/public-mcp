@@ -1,0 +1,6 @@
+{
+  "name": "test-app",
+  "dependencies": {
+    "next": "^14.0.0"
+  }
+}

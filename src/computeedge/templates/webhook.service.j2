@@ -1,0 +1,15 @@
+[Unit]
+Description=ComputeEdge webhook receiver for {{ deployment_id }}
+After=network.target docker.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /root/{{ deployment_id }}/webhook_receiver.py
+WorkingDirectory=/root/{{ deployment_id }}
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

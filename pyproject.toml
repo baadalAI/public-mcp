@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "computeedge"
+version = "0.1.0"
+description = "MCP server that analyzes repos and compares cloud deployment pricing"
+requires-python = ">=3.11"
+dependencies = [
+    "mcp>=1.0",
+    "pyyaml>=6.0",
+    "jinja2>=3.1",
+    "httpx>=0.27",
+    "asyncssh>=2.14",
+    "aiosqlite>=0.20",
+    "bcrypt>=4.0",
+    "uvicorn>=0.30",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+]
+
+[project.scripts]
+computeedge = "computeedge.server:main"
+computeedge-admin = "computeedge.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+computeedge = [
+    "skills/**/*.md",
+    "config/*.yaml",
+    "templates/*.j2",
+    "terraform/**/*.tf",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = [
+    "integration: real API tests requiring cloud credentials (deselect with '-m \"not integration\"')",
+]

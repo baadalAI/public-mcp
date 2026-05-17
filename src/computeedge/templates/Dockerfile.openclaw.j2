@@ -1,0 +1,20 @@
+FROM node:{{ node_version | default("22", true) }}-alpine
+
+WORKDIR /app
+
+RUN corepack enable
+{% if system_packages -%}
+RUN apk add --no-cache {{ system_packages | join(" ") }}
+{% endif -%}
+
+COPY pnpm-lock.yaml package.json ./
+RUN pnpm install --frozen-lockfile
+
+COPY . .
+RUN pnpm build
+
+RUN pnpm install -g openclaw@latest
+
+EXPOSE {{ port | default(18789) }}
+
+CMD ["openclaw", "gateway", "--port", "{{ port | default(18789) }}", "--verbose"]

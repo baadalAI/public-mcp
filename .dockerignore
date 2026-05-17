@@ -1,0 +1,11 @@
+.venv/
+.git/
+.worktrees/
+__pycache__/
+*.pyc
+tests/
+docs/
+.superpowers/
+*.egg-info/
+.pytest_cache/
+web/

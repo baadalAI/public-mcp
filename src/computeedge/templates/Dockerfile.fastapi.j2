@@ -1,0 +1,10 @@
+FROM python:{{ python_version | default("3.11", true) }}-slim
+WORKDIR /app
+{% if system_packages %}
+RUN apt-get update -qq && apt-get install -y -qq --no-install-recommends {{ system_packages | join(" ") }} && rm -rf /var/lib/apt/lists/*
+{% endif %}
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt{% if extra_packages %} {{ extra_packages | join(" ") }}{% endif %}
+COPY . .
+EXPOSE 8000
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

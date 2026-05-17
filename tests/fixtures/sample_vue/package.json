@@ -1,0 +1,9 @@
+{
+  "name": "sample-vue",
+  "dependencies": {
+    "vue": "^3.4"
+  },
+  "scripts": {
+    "build": "vite build"
+  }
+}

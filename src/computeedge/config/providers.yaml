@@ -1,0 +1,140 @@
+railway:
+  plans:
+    hobby:
+      ram_mb: 512
+      cpu_vcpu: 0.5
+      storage_gb: 1
+      monthly_base: 5
+      compute_per_vcpu_hour: 0.000463
+      memory_per_gb_hour: 0.000231
+      managed_postgres: true
+      managed_redis: true
+      egress_per_gb: 0
+      notes: "Usage-based on top of $5 base. Credit system can cause shutdowns."
+    pro:
+      ram_mb: 8192
+      cpu_vcpu: 8
+      storage_gb: 100
+      monthly_base: 20
+      compute_per_vcpu_hour: 0.000463
+      memory_per_gb_hour: 0.000231
+      managed_postgres: true
+      managed_redis: true
+      egress_per_gb: 0
+      notes: "Team plan with higher limits."
+
+hetzner:
+  plans:
+    cx22:
+      ram_mb: 4096
+      cpu_vcpu: 2
+      storage_gb: 40
+      monthly: 3.99
+      egress_per_gb: 0
+      egress_free_tb: 20
+      managed_postgres: false
+      deprecated: true
+      notes: "DEPRECATED — use cx23 instead."
+    cx23:
+      ram_mb: 4096
+      cpu_vcpu: 2
+      storage_gb: 40
+      monthly: 3.49
+      egress_per_gb: 0
+      egress_free_tb: 20
+      managed_postgres: false
+      notes: "Shared vCPU (Intel). Best value for low traffic. No managed DB — use Docker Compose."
+    cx32:
+      ram_mb: 8192
+      cpu_vcpu: 4
+      storage_gb: 80
+      monthly: 7.59
+      egress_per_gb: 0
+      egress_free_tb: 20
+      managed_postgres: false
+      deprecated: true
+      notes: "DEPRECATED — use cx33 instead."
+    cx33:
+      ram_mb: 8192
+      cpu_vcpu: 4
+      storage_gb: 80
+      monthly: 6.49
+      egress_per_gb: 0
+      egress_free_tb: 20
+      managed_postgres: false
+      notes: "Shared vCPU (Intel). Good for medium traffic."
+    cax11:
+      ram_mb: 4096
+      cpu_vcpu: 2
+      storage_gb: 40
+      monthly: 3.99
+      egress_per_gb: 0
+      egress_free_tb: 20
+      managed_postgres: false
+      notes: "Ampere ARM64. Same price as cx22 but better perf/watt."
+    cpx11:
+      ram_mb: 2048
+      cpu_vcpu: 2
+      storage_gb: 40
+      monthly: 4.99
+      egress_per_gb: 0
+      egress_free_tb: 20
+      managed_postgres: false
+      notes: "Shared vCPU (AMD). 2GB RAM only."
+
+digitalocean:
+  plans:
+    s-1vcpu-1gb:
+      ram_mb: 1024
+      cpu_vcpu: 1
+      storage_gb: 25
+      monthly: 6
+      egress_per_gb: 0
+      egress_free_tb: 1
+      managed_postgres: true
+      managed_postgres_monthly: 15
+      notes: "Basic Droplet. 1 vCPU, 1GB RAM."
+    s-1vcpu-2gb:
+      ram_mb: 2048
+      cpu_vcpu: 1
+      storage_gb: 50
+      monthly: 12
+      egress_per_gb: 0
+      egress_free_tb: 2
+      managed_postgres: true
+      managed_postgres_monthly: 15
+      notes: "Basic Droplet. 1 vCPU, 2GB RAM."
+    s-2vcpu-2gb:
+      ram_mb: 2048
+      cpu_vcpu: 2
+      storage_gb: 60
+      monthly: 18
+      egress_per_gb: 0
+      egress_free_tb: 3
+      managed_postgres: true
+      managed_postgres_monthly: 15
+      notes: "Basic Droplet. 2 vCPU, 2GB RAM."
+    s-2vcpu-4gb:
+      ram_mb: 4096
+      cpu_vcpu: 2
+      storage_gb: 80
+      monthly: 24
+      egress_per_gb: 0
+      egress_free_tb: 4
+      managed_postgres: true
+      managed_postgres_monthly: 15
+      notes: "Basic Droplet. 2 vCPU, 4GB RAM."
+
+aws_equivalents:
+  low:
+    compute: 15.00
+    database: 15.00
+    total: 30.00
+  medium:
+    compute: 30.00
+    database: 30.00
+    total: 60.00
+  high:
+    compute: 70.00
+    database: 60.00
+    total: 130.00

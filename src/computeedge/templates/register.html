@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComputeEdge - Get API Key</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #e5e5e5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 440px;
+            padding: 2rem;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+        .logo span { color: #3b82f6; }
+        .subtitle {
+            color: #737373;
+            font-size: 0.875rem;
+            margin-bottom: 2rem;
+        }
+        .card {
+            background: #171717;
+            border: 1px solid #262626;
+            border-radius: 12px;
+            padding: 2rem;
+        }
+        h2 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #a3a3a3;
+            margin-bottom: 0.375rem;
+        }
+        input {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.9375rem;
+            margin-bottom: 1rem;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+        input:focus { border-color: #3b82f6; }
+        input::placeholder { color: #525252; }
+        button {
+            width: 100%;
+            padding: 0.625rem;
+            background: #3b82f6;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        button:hover { background: #2563eb; }
+        button:disabled {
+            background: #1e3a5f;
+            cursor: not-allowed;
+        }
+        .error {
+            background: #2d1215;
+            border: 1px solid #7f1d1d;
+            color: #fca5a5;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        .result {
+            display: none;
+            margin-top: 1.5rem;
+        }
+        .result.show { display: block; }
+        .warning {
+            background: #2d2305;
+            border: 1px solid #854d0e;
+            color: #fde68a;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.8125rem;
+            margin-bottom: 1rem;
+        }
+        .key-box {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .key-box code {
+            flex: 1;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.8125rem;
+            color: #4ade80;
+            word-break: break-all;
+        }
+        .copy-btn {
+            width: auto;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.8125rem;
+            background: #262626;
+            border: 1px solid #404040;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+        .copy-btn:hover { background: #333; }
+        .usage {
+            margin-top: 1rem;
+            font-size: 0.8125rem;
+            color: #737373;
+        }
+        .usage code {
+            background: #1a1a2e;
+            padding: 0.125rem 0.375rem;
+            border-radius: 4px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            color: #93c5fd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">Compute<span>Edge</span></div>
+        <p class="subtitle">Cloud deployment MCP server</p>
+
+        <div class="card">
+            <h2>Get your API key</h2>
+
+            <div class="error" id="error"></div>
+
+            <form id="form">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" placeholder="Your name" required>
+
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="you@example.com" required>
+
+                <button type="submit" id="submit-btn">Generate API Key</button>
+            </form>
+
+            <div class="result" id="result">
+                <div class="warning">
+                    Save this key now. It will only be shown once and cannot be retrieved later.
+                </div>
+                <div class="key-box">
+                    <code id="api-key"></code>
+                    <button class="copy-btn" onclick="copyKey()">Copy</button>
+                </div>
+                <div class="usage">
+                    Use this key to connect to ComputeEdge:<br>
+                    <code>Authorization: Bearer &lt;your-key&gt;</code>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('form');
+        const errorEl = document.getElementById('error');
+        const resultEl = document.getElementById('result');
+        const apiKeyEl = document.getElementById('api-key');
+        const submitBtn = document.getElementById('submit-btn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorEl.style.display = 'none';
+            resultEl.classList.remove('show');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Generating...';
+
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: document.getElementById('name').value.trim(),
+                        email: document.getElementById('email').value.trim(),
+                    }),
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.error || 'Registration failed');
+                }
+
+                apiKeyEl.textContent = data.api_key;
+                resultEl.classList.add('show');
+                form.style.display = 'none';
+            } catch (err) {
+                errorEl.textContent = err.message;
+                errorEl.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Generate API Key';
+            }
+        });
+
+        function copyKey() {
+            navigator.clipboard.writeText(apiKeyEl.textContent).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = 'Copy', 2000);
+            });
+        }
+    </script>
+</body>
+</html>

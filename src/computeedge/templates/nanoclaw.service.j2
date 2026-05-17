@@ -1,0 +1,22 @@
+[Unit]
+Description=NanoClaw Agent Framework
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory={{ app_dir }}
+ExecStart=/usr/bin/env node {{ app_dir }}/dist/index.js
+Restart=always
+RestartSec=10
+EnvironmentFile=-{{ app_dir }}/.env
+Environment=NODE_ENV=production
+{% if env_vars -%}
+{% for key, value in env_vars.items() -%}
+Environment={{ key }}={{ value }}
+{% endfor -%}
+{% endif -%}
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,28 @@
+FROM python:{{ python_version | default("3.12", true) }}-slim
+
+WORKDIR /app
+
+{% if system_packages %}
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    {{ system_packages | join(" ") }} \
+    && rm -rf /var/lib/apt/lists/*
+{% endif %}
+
+{% if has_requirements_txt %}
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt{% for pkg in extra_packages %} && pip install --no-cache-dir {{ pkg }}{% endfor %}
+
+{% else %}
+COPY pyproject.toml .
+RUN pip install --no-cache-dir .{% for pkg in extra_packages %} && pip install --no-cache-dir {{ pkg }}{% endfor %}
+
+{% endif %}
+COPY . .
+
+{% if build_cmd %}
+RUN {{ build_cmd }}
+{% endif %}
+
+EXPOSE {{ port | default(8000) }}
+
+CMD ["sh", "-c", "{{ run_cmd }}"]

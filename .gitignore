@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mcp.json
+.env
+.gstack/
+.DS_Store
+.worktrees/
+.claude/
+learnings.md
+short_term_memory.md
+long_term_memory.md

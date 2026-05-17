@@ -1,0 +1,230 @@
+frontend:
+  nextjs:
+    indicators:
+      - file: "package.json"
+        contains: '"next"'
+      - file: "next.config.js"
+      - file: "next.config.mjs"
+      - file: "next.config.ts"
+    default_port: 3000
+    deployable: true
+
+  react:
+    indicators:
+      - file: "package.json"
+        contains: '"react"'
+        excludes: '"next"'
+    default_port: 3000
+    deployable: true
+
+  vue:
+    indicators:
+      - file: "package.json"
+        contains: '"vue"'
+    default_port: 5173
+    deployable: true
+    template: "react"
+    output_dir: "dist"
+
+backend:
+  fastapi:
+    indicators:
+      - file: "requirements.txt"
+        contains: "fastapi"
+      - file: "pyproject.toml"
+        contains: "fastapi"
+    language: "python"
+    default_port: 8000
+    deployable: true
+
+  django:
+    indicators:
+      - file: "requirements.txt"
+        contains: "django"
+      - file: "manage.py"
+    language: "python"
+    default_port: 8000
+    deployable: true
+    template_type: "language"
+    install_cmd: "pip install --no-cache-dir -r requirements.txt"
+    run_cmd: "gunicorn {app_name}.wsgi:application --bind 0.0.0.0:8000"
+    build_cmd: "python manage.py collectstatic --noinput"
+    extra_packages: ["gunicorn"]
+
+  express:
+    indicators:
+      - file: "package.json"
+        contains: '"express"'
+    language: "javascript"
+    default_port: 3000
+    deployable: true
+
+  flask:
+    indicators:
+      - file: "requirements.txt"
+        contains: "flask"
+      - file: "pyproject.toml"
+        contains: "flask"
+    language: "python"
+    default_port: 8000
+    deployable: true
+    template_type: "language"
+    install_cmd: "pip install --no-cache-dir -r requirements.txt"
+    run_cmd: "gunicorn app:app --bind 0.0.0.0:8000"
+    extra_packages: ["gunicorn"]
+
+  streamlit:
+    indicators:
+      - file: "requirements.txt"
+        contains: "streamlit"
+      - file: "pyproject.toml"
+        contains: "streamlit"
+    language: "python"
+    default_port: 8501
+    deployable: true
+    template_type: "language"
+    run_cmd: "streamlit run {entry_point} --server.port=8501 --server.address=0.0.0.0 --server.headless=true"
+
+  rails:
+    indicators:
+      - file: "Gemfile"
+        contains: "rails"
+      - file: "config/routes.rb"
+    language: "ruby"
+    default_port: 3000
+    deployable: true
+    template_type: "framework"
+
+  go:
+    indicators:
+      - file: "go.mod"
+    language: "go"
+    default_port: 8080
+    deployable: true
+    template_type: "framework"
+    entry_points: ["cmd/server/main.go", "cmd/main.go", "main.go"]
+
+  openclaw:
+    indicators:
+      - file: "openclaw.json"
+      - file: "package.json"
+        contains: '"openclaw"'
+    language: "javascript"
+    default_port: 18789
+    deployable: true
+    template_type: "framework"
+    run_cmd: "openclaw gateway --port 18789 --verbose"
+
+  nanoclaw:
+    indicators:
+      - file: "package.json"
+        contains: '"nanoclaw"'
+      - file: "container/Dockerfile"
+      - file: "src/container-runner.ts"
+    language: "javascript"
+    deployable: true
+    deploy_mode: "native"
+    default_plan:
+      hetzner: "cx33"
+      digitalocean: "s-2vcpu-4gb"
+    run_cmd: "node dist/index.js"
+    build_cmd: "npm run build"
+
+  rust:
+    indicators:
+      - file: "Cargo.toml"
+    language: "rust"
+    default_port: 8080
+    deployable: false
+
+database:
+  postgres:
+    indicators:
+      - file_contains: ["sqlalchemy", "prisma", "psycopg", "psycopg2", "postgres", "pg"]
+    orm_indicators:
+      sqlalchemy: ["alembic.ini", "alembic/"]
+      prisma: ["prisma/schema.prisma"]
+      django_orm: ["manage.py"]
+
+  mysql:
+    indicators:
+      - file_contains: ["mysql2", "pymysql", "mysql-connector", "mysqlclient", "go-sql-driver/mysql", "MySQLdb"]
+
+  sqlite:
+    indicators:
+      - file_contains: ["sqlite3", "sqlite"]
+      - file_exists: "db.sqlite3"
+
+  mongodb:
+    indicators:
+      - file_contains: ["mongoose", "pymongo", "mongodb"]
+
+services:
+  redis:
+    indicators:
+      - file_contains: ["redis", "ioredis", "celery", "bull", "bullmq"]
+  s3:
+    indicators:
+      - file_contains: ["boto3", "@aws-sdk/client-s3"]
+  websockets:
+    indicators:
+      - file_contains: ["socket.io", "websockets", "channels"]
+
+resources:
+  low:
+    frontend_only:
+      ram_mb: 256
+      cpu_vcpu: 0.5
+      storage_gb: 1
+    frontend_backend:
+      ram_mb: 512
+      cpu_vcpu: 1
+      storage_gb: 5
+    frontend_backend_db:
+      ram_mb: 1024
+      cpu_vcpu: 1
+      storage_gb: 10
+      database_ram_mb: 256
+    frontend_backend_db_redis:
+      ram_mb: 1536
+      cpu_vcpu: 1.5
+      storage_gb: 10
+      database_ram_mb: 256
+  medium:
+    frontend_only:
+      ram_mb: 512
+      cpu_vcpu: 1
+      storage_gb: 5
+    frontend_backend:
+      ram_mb: 1024
+      cpu_vcpu: 1
+      storage_gb: 10
+    frontend_backend_db:
+      ram_mb: 2048
+      cpu_vcpu: 2
+      storage_gb: 20
+      database_ram_mb: 512
+    frontend_backend_db_redis:
+      ram_mb: 3072
+      cpu_vcpu: 2
+      storage_gb: 20
+      database_ram_mb: 512
+  high:
+    frontend_only:
+      ram_mb: 1024
+      cpu_vcpu: 2
+      storage_gb: 10
+    frontend_backend:
+      ram_mb: 2048
+      cpu_vcpu: 2
+      storage_gb: 20
+    frontend_backend_db:
+      ram_mb: 4096
+      cpu_vcpu: 4
+      storage_gb: 50
+      database_ram_mb: 1024
+    frontend_backend_db_redis:
+      ram_mb: 6144
+      cpu_vcpu: 4
+      storage_gb: 50
+      database_ram_mb: 1024
