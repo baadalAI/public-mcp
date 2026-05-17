@@ -225,4 +225,4 @@ uv run pytest tests/ -v -m integration          # Integration tests (needs token
 
 ## License
 
-MIT
+[MIT](LICENSE) © 2026 Ashleyn Castelino and Keshav Dalmia
